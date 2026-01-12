@@ -120,9 +120,7 @@ class RecipeGetSerializer(serializers.ModelSerializer):
 
 
 class RecipeCreateSerializer(serializers.ModelSerializer):
-    """
-    Сериализатор для создания/обновления рецепта.
-    """
+    """Сериализатор для создания/обновления рецепта."""
 
     ingredients = IngredientInRecipeSerializer(many=True)
     tags = serializers.SlugRelatedField(many=True,
@@ -182,7 +180,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
 class FollowerSerializer(serializers.ModelSerializer):
     """"
-    Сериализатор,предоставляющий информацию о подписках пользователя.
+    Сериализатор, предоставляющий информацию о подписках пользователя.
     Для методов def subscribe и def subscriptions.
     """
 

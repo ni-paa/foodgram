@@ -11,7 +11,7 @@ services:
       - pg_data:/var/lib/postgresql/data
 
   backend:
-    build: ../backend
+    image: katomy/foodgram_backend
     env_file: ./.env
     command: python manage.py runserver 0.0.0.0:8080
     depends_on:
@@ -23,16 +23,14 @@ services:
       - ../data/:/app/static/data/
 
   frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
+    image: katomy/foodgram_frontend
     volumes:
       - static:/static
 
   nginx:
     image: nginx:1.25
     ports:
-      - 80:80
+      - 8080:80
     depends_on:
       - backend
       - frontend
