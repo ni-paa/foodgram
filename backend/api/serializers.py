@@ -21,7 +21,6 @@ class Base64ImageField(serializers.ImageField):
 
 class FavoriteShoppingCartSerializer(serializers.ModelSerializer):
     """Сериализатор для вывода рецептов в избранном и списке покупок."""
-
     image = Base64ImageField(max_length=None, use_url=True)
 
     class Meta:
@@ -31,7 +30,6 @@ class FavoriteShoppingCartSerializer(serializers.ModelSerializer):
 
 class UserSerializer(UserCreateSerializer):
     """Сериализатор для пользователей."""
-
     is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
@@ -49,7 +47,6 @@ class UserSerializer(UserCreateSerializer):
 
 class TagSerializer(serializers.ModelSerializer):
     """Сериализатор для тегов."""
-
     class Meta:
         model = Tag
         fields = ('id', 'name', 'color', 'slug')
@@ -57,15 +54,15 @@ class TagSerializer(serializers.ModelSerializer):
 
 class IngredientSerializer(serializers.ModelSerializer):
     """Сериализатор для ингредиентов."""
-
     class Meta:
         model = Ingredient
         fields = ('id', 'name', 'measurement_unit')
 
 
 class IngredientInRecipeSerializer(serializers.ModelSerializer):
-    """Сериализатор для ингредиентов в рецепте."""
-
+    """
+    Сериализатор для ингредиентов в рецепте.
+    """
     id = serializers.PrimaryKeyRelatedField(
         queryset=Ingredient.objects.all(),
         source='ingredient')
@@ -86,7 +83,6 @@ class RecipeGetSerializer(serializers.ModelSerializer):
     Сериализатор для получения информации о рецепте ("list", "retrieve").
     GET-запросы на получение списка рецептов, получение рецепта.
     """
-
     image = serializers.SerializerMethodField()
     tags = TagSerializer(many=True)
     author = UserSerializer()
@@ -120,8 +116,9 @@ class RecipeGetSerializer(serializers.ModelSerializer):
 
 
 class RecipeCreateSerializer(serializers.ModelSerializer):
-    """Сериализатор для создания/обновления рецепта."""
-
+    """
+    Сериализатор для создания/обновления рецепта.
+    """
     ingredients = IngredientInRecipeSerializer(many=True)
     tags = serializers.SlugRelatedField(many=True,
                                         queryset=Tag.objects.all(),
@@ -133,7 +130,6 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         Вспомогательная функция для записи ингредиентов
         и их количества в рецепт.
         """
-
         recipes.tags.set(tags_data)
         for item in ingredients_data:
             ingredient = item.get('ingredient')
@@ -180,10 +176,9 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
 class FollowerSerializer(serializers.ModelSerializer):
     """"
-    Сериализатор, предоставляющий информацию о подписках пользователя.
+    Сериализатор,предоставляющий информацию о подписках пользователя.
     Для методов def subscribe и def subscriptions.
     """
-
     is_subscribed = serializers.SerializerMethodField()
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()

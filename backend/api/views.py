@@ -27,7 +27,6 @@ class TagViewSet(ReadOnlyModelViewSet):
     Получение списков тегов и информации о теге по id.
     Создание и редактирование тегов доступно только в админ-панеле.
     """
-
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = (AllowAny, )
@@ -40,7 +39,6 @@ class IngredientViewSet(ReadOnlyModelViewSet):
     Создание и редактирование ингредиентов доступно только в админ-панеле.
     Доступен поиск по частичному вхождению в начале названия ингредиента.
     """
-
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = (AllowAny, )
@@ -75,7 +73,6 @@ class RecipeViewSet(mixins.ListModelMixin,
 
     def get_serializer_class(self):
         """Выбор сериализатора в зависимости от метода."""
-
         if self.action == 'list' or self.action == 'retrieve':
             return RecipeGetSerializer
         return RecipeCreateSerializer
@@ -91,7 +88,6 @@ class RecipeViewSet(mixins.ListModelMixin,
         """
         Вспомогательный метод для методов: def favorite и shopping_cart.
         """
-
         user = request.user
         recipe = get_object_or_404(Recipe, id=pk)
         if request.method == 'POST':
@@ -113,7 +109,6 @@ class RecipeViewSet(mixins.ListModelMixin,
     )
     def shopping_cart(self, request, pk):
         """Добавление/удаление в список покупок"""
-
         return self.method_post_delete(request,
                                        ShoppingCart,
                                        FavoriteShoppingCartSerializer,
@@ -159,7 +154,6 @@ class UserViewSet(ModelViewSet):
             permission_classes=[IsAuthenticated],)
     def me(self, request):
         """Получение пользователем данных о себе (users/me)."""
-
         serializer = self.get_serializer(request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -168,7 +162,6 @@ class UserViewSet(ModelViewSet):
             permission_classes=[IsAuthenticated],)
     def subscribe(self, request, id):
         """Подписаться/отписаться."""
-
         user = request.user
         author = get_object_or_404(User, id=id)
         if request.method == 'POST':
@@ -192,7 +185,6 @@ class UserViewSet(ModelViewSet):
             serializer_class=FollowerSerializer,)
     def subscriptions(self, request, *args, **kwargs):
         """Получение списка всех подписок на пользователей."""
-
         user = request.user
         following = User.objects.filter(following__user=user)
         pages = self.paginate_queryset(following)

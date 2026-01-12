@@ -1,8 +1,7 @@
 def file_generation(shoppinglist):
-    """Метод генерирует список для скачивания/файл."""
-
+    """Метод генерирует список для скачивания/файлик."""
     shopping_list = list()
-    shopping_list.append('Ваш список покупок в Foodgram:\n')
+    shopping_list.append('Ваш список покупок от Foodgram:\n')
     for ingredient in shoppinglist:
         shopping_list.append(
             f'{ingredient["ingredient__name"]} - '
