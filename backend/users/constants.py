@@ -1,4 +1,0 @@
-# users/models.py
-MAX_LENGTH_USER_EMAIL = 254
-MAX_LENGTH_USER_CHARFIELD = 150
-REDEX_USER_USERNAME = r'^[\w.@+-]+$'

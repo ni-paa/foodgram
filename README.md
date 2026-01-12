@@ -1,5 +1,5 @@
 # Foodgram - «Продуктовый помощник»
-[![Foodgram CI/CD](https://github.com/EvgeniyKrainov/foodgram/actions/workflows/main.yml/badge.svg)](https://github.com/EvgeniyKrainov/foodgram/actions/workflows/main.yml)
+[![Foodgram CI/CD](https://github.com/ni-paa/foodgram/actions/workflows/main.yml/badge.svg)](https://github.com/ni-paa/foodgram/actions/workflows/main.yml)
 [![Python](https://img.shields.io/badge/Python-3.9-3776AB.svg?logo=python&logoColor=white)](https://python.org)
 [![Django](https://img.shields.io/badge/Django-3.2-092E20.svg?logo=django&logoColor=white)](https://www.djangoproject.com/)
 [![Django REST](https://img.shields.io/badge/Django%20REST-3.12.4-ff1709.svg?logo=django&logoColor=white)](https://www.django-rest-framework.org/)
@@ -11,14 +11,14 @@
 
 **Foodgram** — это онлайн-сервис для публикации рецептов. Пользователи могут создавать свои собственные рецепты, просматривать рецепты других авторов, подписываться на любимых кулинаров, добавлять понравившиеся рецепты в «Избранное» и формировать список покупок для выбранных рецептов.
 
-Сайт запущенного проекта доступен по адресу: [https://foodgram.3utilities.com/](https://foodgram.3utilities.com/)
+Сайт запущенного проекта доступен по адресу: [https://food.vsdb.ru/](https://food.vsdb.ru/)
 
 ## 📚 Документация API
 
 После запуска проекта полная документация API доступна по адресам:
 
-* **Swagger UI** (интерактивная документация с тестированием): [https://foodgram.3utilities.com/api/docs/](https://foodgram.3utilities.com/api/docs/)
-* **ReDoc** (альтернативный вид документации): [https://foodgram.3utilities.com/api/redoc/](https://foodgram.3utilities.com/api/redoc/)
+* **Swagger UI** (интерактивная документация с тестированием): [https://food.vsdb.ru/api/docs/](https://food.vsdb.ru/api/docs/)
+* **ReDoc** (альтернативный вид документации): [https://food.vsdb.ru/api/redoc/](https://food.vsdb.ru/api/redoc/)
 
 
 ### 🔍 В документации вы найдете:
@@ -78,7 +78,7 @@
 
 ### 1. Клонируйте репозиторий
 ```bash
-git clone https://github.com/EvgeniyKrainov/foodgram.git
+git clone https://github.com/ni-paa/foodgram.git
 cd foodgram
 ```
 
