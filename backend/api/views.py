@@ -90,7 +90,7 @@ class UserViewSet(DjoserViewSets.UserViewSet):
         user.avatar = avatar_data
         user.save()
         image_url = request.build_absolute_uri(
-            f'/media/users/{avatar_data.name}')
+            f'/media/{avatar_data.name}')
         return Response(
             {'avatar': str(image_url)}, status=status.HTTP_200_OK
         )
