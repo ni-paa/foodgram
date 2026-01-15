@@ -13,6 +13,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Копируем все файлы проекта в контейнер
 COPY . .
 
+# Собираем статические файлы
+RUN python manage.py collectstatic --noinput
 
 # Открываем порт для приложения (если оно запускается на 8000)
 # EXPOSE 8000
