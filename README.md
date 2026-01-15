@@ -134,18 +134,35 @@ docker-compose exec backend python manage.py load_data
 
 ```
 foodgram/
-├── backend/                 # Django-приложение
-│   ├── api/                # Django REST Framework (эндпоинты, сериализаторы)
-│   ├── foodgram/           # Основные настройки проекта (settings.py, urls.py)
-│   ├── recipes/            # Приложение "Рецепты" (модели, views)
-│   ├── users/              # Приложение "Пользователи" (кастомная модель)
+├── backend/                 # Django бэкенд-приложение
+│   ├── api/                # Django REST Framework (эндпоинты, сериализаторы, фильтры, пагинация)
+│   ├── backend/            # Основные настройки проекта (settings.py, urls.py, wsgi.py, asgi.py)
+│   ├── recipes/            # Приложение "Рецепты" (модели, представления, админка)
+│   ├── data/               # Начальные данные (ингредиенты, теги в CSV/JSON)
+│   ├── docs/               # Документация API (OpenAPI, ReDoc)
+│   ├── management/commands/ # Кастомные Django-команды (загрузка данных)
 │   ├── manage.py
-│   └── requirements.txt
-├── frontend/               # Статические файлы фронтенда (HTML, CSS, JS)
-├── nginx/                  # Конфигурация Nginx
-├── docker-compose.yml      # Конфигурация для запуска всех сервисов
-├── Dockerfile              # Инструкция для сборки образа бэкенда
-└── .github/workflows/      # Файлы для настройки CI/CD (GitHub Actions)
+│   ├── requirements.txt
+│   ├── Dockerfile
+│   └── .dockerignore
+├── frontend/               # React фронтенд-приложение
+│   ├── src/                # Исходный код (компоненты, страницы, утилиты, контексты)
+│   ├── public/             # Статические файлы (HTML, иконки, манифест)
+│   ├── Dockerfile
+│   ├── package.json
+│   └── yarn.lock
+├── infra/                  # Инфраструктура для продакшена
+│   ├── Dockerfile
+│   └── nginx.conf
+├── docs/                   # Сгенерированная документация
+├── postman_collection/     # Коллекция Postman для тестирования API
+├── docker-compose.yml      # Конфигурация для разработки
+├── docker-compose.production.yml  # Конфигурация для продакшена
+├── .gitignore
+├── LICENSE
+├── README.md
+├── setup.cfg
+└── .github/workflows/      # CI/CD пайплайны (GitHub Actions)
 ```
 
 ---
