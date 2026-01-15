@@ -8,48 +8,34 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.getenv('SECRET_KEY', get_random_secret_key())
+SECRET_KEY = os.environ.get('SECRET_KEY', get_random_secret_key())
 
-DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
+DEBUG = (os.environ.get('DEBUG') == 'True')
 
-ROOT_URLCONF = 'foodgram.urls'
-WSGI_APPLICATION = 'foodgram.wsgi.application'
-DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
-
-
-LANGUAGE_CODE = 'ru-ru'
-TIME_ZONE = 'UTC'
-USE_I18N = True
-USE_L10N = True
-USE_TZ = True
-
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
-
-AUTH_USER_MODEL = 'recipes.User'
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', default='127.0.0.1, localhost').split(', ')
 
 CSRF_TRUSTED_ORIGINS = [
+    'http://127.0.0.1',
     'http://localhost:8000',
-    'http://127.0.0.1'
 ]
 
-
 INSTALLED_APPS = [
+    'api',
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
     'django.contrib.messages',
+    'django.contrib.sessions',
     'django.contrib.staticfiles',
     'django_filters',
-    'corsheaders',
     'djoser',
+    'recipes.apps.RecipesConfig',
     'rest_framework',
     'rest_framework.authtoken',
-    'recipes.apps.RecipesConfig',
-    'api',
 ]
+
+AUTH_USER_MODEL = 'recipes.User'
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -65,7 +51,7 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost',
-    "http://localhost:3000",
+    'http://localhost:3000',
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -127,14 +113,11 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-TIME_ZONE = 'UTC'
-
+LANGUAGE_CODE = 'ru-RU'
+TIME_ZONE = 'Europe/Moscow'
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
-
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
@@ -163,7 +146,7 @@ REST_FRAMEWORK = {
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Foodgram API',
     'DESCRIPTION': 'Документация для проекта Foodgram',
-    'VERSION': '1.0.0',
+    'VERSION': '1.2.3',
     'SERVE_INCLUDE_SCHEMA': False,
 }
 
