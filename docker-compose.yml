@@ -23,6 +23,7 @@ services:
       && python manage.py makemigrations recipes
       && python manage.py migrate
       && python manage.py migrate recipes
+      && python manage.py collectstatic --noinput
       && python manage.py load_ingridients data/ingredients.json
       && python manage.py load_tags data/tags.json
       && gunicorn --bind 0.0.0.0:8080 backend.wsgi"

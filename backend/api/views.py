@@ -177,7 +177,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         """Метод для прав доступа, в зависимости от метода."""
-        if self.request.method in ("PATCH", "DELETE"):
+        if self.action in ('shopping_cart', 'favorite', 'download_shopping_cart') or self.request.method == "POST":
+            self.permission_classes = [IsAuthenticated]
+        elif self.request.method in ("PATCH", "DELETE"):
             self.permission_classes = [IsAuthor]
         return super().get_permissions()
 
