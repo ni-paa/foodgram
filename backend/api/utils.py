@@ -51,10 +51,9 @@ def generate_shopping_list_report(user, ingredients, recipes):
     """
     # Получаем текущую дату
     current_date = datetime.today()
-    formatted_date = "{} {} {}".format(
-        current_date.day,
-        MONTH_NAMES[current_date.month - 1],
-        current_date.year
+    formatted_date = (
+        f"{current_date.day} {MONTH_NAMES[current_date.month - 1]} "
+        f"{current_date.year}"
     )
 
     # Создание заголовка с именем пользователя и датой
@@ -64,8 +63,10 @@ def generate_shopping_list_report(user, ingredients, recipes):
     # Создание списка ингредиентов с нумерацией
     ingredients_list = '\n'.join(
         INGREDIENT_FORMAT.format(
-            i, ingredient['ingredient__name'].capitalize(),
-            ingredient['ingredient__measurement_unit'], ingredient['amount'])
+            i,
+            ingredient['ingredient__name'].capitalize(),
+            ingredient['ingredient__measurement_unit'],
+            ingredient['amount'])
         for i, ingredient in enumerate(ingredients, start=1)
     )
 
