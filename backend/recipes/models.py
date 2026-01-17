@@ -13,7 +13,7 @@ from .constants import (
 )
 
 
-class CustomUser(AbstractUser):
+class User(AbstractUser):
     """Расширенная модель пользователя с дополнительными полями."""
 
     email = models.EmailField(
@@ -60,11 +60,11 @@ class Follow(models.Model):
     """Модель для подписок на авторов."""
 
     followed_user = models.ForeignKey(
-        CustomUser, on_delete=models.CASCADE, related_name='following',
+        User, on_delete=models.CASCADE, related_name='following',
         verbose_name='Подписываемый автор'
     )
     follower = models.ForeignKey(
-        CustomUser, on_delete=models.CASCADE, related_name='followers',
+        User, on_delete=models.CASCADE, related_name='followers',
         verbose_name='Подписчик'
     )
 
@@ -77,6 +77,9 @@ class Follow(models.Model):
                 name='unique_follow'
             )
         ]
+
+    def __str__(self):
+        return f'{self.follower} подписан на {self.followed_user}'
 
 
 class Tag(models.Model):
@@ -134,7 +137,7 @@ class Recipe(models.Model):
         Tag, verbose_name='Тэги'
     )
     author = models.ForeignKey(
-        CustomUser, verbose_name='Автор', on_delete=models.CASCADE,
+        User, verbose_name='Автор', on_delete=models.CASCADE,
         related_name='authored_recipes'
     )
     ingredients = models.ManyToManyField(
@@ -207,7 +210,7 @@ class BaseUserRecipe(models.Model):
     """Базовый класс для хранения пользователя и рецепта."""
 
     user = models.ForeignKey(
-        CustomUser, on_delete=models.CASCADE, verbose_name='Пользователь'
+        User, on_delete=models.CASCADE, verbose_name='Пользователь'
     )
     recipe = models.ForeignKey(
         Recipe, on_delete=models.CASCADE, verbose_name='Рецепт'

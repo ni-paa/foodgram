@@ -1,18 +1,25 @@
+"""
+Админ-панель для приложения рецептов.
+
+Этот модуль содержит настройки админ-панели Django для управления
+моделями User, Recipe, Ingredient, Tag, Follow, ShoppingCart, Favorite.
+"""
+
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.safestring import mark_safe
 from django.contrib.auth.models import Group
 
 from .models import (Favorite, Ingredient, RecipeIngredients, Recipe,
-                     ShoppingCart, Tag, CustomUser, Follow)
+                     ShoppingCart, Tag, User, Follow)
 
-# Убираем стандартные модели
+
 admin.site.unregister(Group)
 
 
 class RelatedObjectFilter(admin.SimpleListFilter):
     """
-    Фильтр для проверки наличия связанных объектов.
+    Фильтр для проверки связанных объектов.
     Рецепты, подписки, подписчики.
     """
     parameter_name = ''
@@ -53,7 +60,7 @@ class HasFollowersFilter(RelatedObjectFilter):
     related_field_name = 'followers'
 
 
-@admin.register(CustomUser)
+@admin.register(User)
 class UserAdmin(BaseUserAdmin):
     list_display = (
         'username', 'email', 'full_name', 'avatar_preview',

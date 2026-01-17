@@ -1,3 +1,10 @@
+"""
+API views для приложения рецептов.
+
+Этот модуль содержит ViewSets для управления пользователями, рецептами,
+ингредиентами, тегами, подписками, списком покупок и избранным.
+"""
+
 from django.db.models import Sum
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse, JsonResponse, FileResponse
@@ -24,7 +31,7 @@ from recipes.constants import (
 from .filters import RecipeFilter, IngredientFilter
 from recipes.models import (
     Ingredient, Favorite, Recipe, RecipeIngredients,
-    ShoppingCart, Tag, Follow, CustomUser
+    ShoppingCart, Tag, Follow, User
 
 )
 from .serializers import (
@@ -46,7 +53,7 @@ from .pagination import PageLimitPagination
 class UserViewSet(DjoserViewSets.UserViewSet):
     """Общий вьюсет для пользователя."""
 
-    queryset = CustomUser.objects.all()
+    queryset = User.objects.all()
     serializer_class = BaseUserSerializer
     pagination_class = PageLimitPagination
 
@@ -99,7 +106,7 @@ class UserViewSet(DjoserViewSets.UserViewSet):
     def subscriptions(self, request):
         """Метод для управления подписками пользователя."""
         user = request.user
-        queryset = CustomUser.objects.filter(following__follower=user)
+        queryset = User.objects.filter(following__follower=user)
         pages = self.paginate_queryset(queryset)
         self.serializer_class = SubscriberReadSerializer
         serializer = self.get_serializer(
@@ -114,7 +121,7 @@ class UserViewSet(DjoserViewSets.UserViewSet):
     def subscribe(self, request, id):
         """Метод для управления подписками."""
         user = request.user
-        followed_user = get_object_or_404(CustomUser, id=id)
+        followed_user = get_object_or_404(User, id=id)
         # Проверка подписки на самого себя
         if user == followed_user:
             raise ValidationError({'error': SUBSCRIBE_SELF_ERROR})

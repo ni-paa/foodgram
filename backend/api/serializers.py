@@ -1,3 +1,10 @@
+"""
+Сериализаторы для API приложения рецептов.
+
+Этот модуль содержит сериализаторы для моделей User, Recipe, Ingredient,
+Tag, Follow, ShoppingCart, Favorite и вспомогательные сериализаторы.
+"""
+
 from collections import Counter
 
 from django.db import transaction
@@ -11,7 +18,7 @@ from recipes.constants import (
 )
 from recipes.models import (
     Ingredient, RecipeIngredients,
-    Tag, Recipe, CustomUser
+    Tag, Recipe, User
 )
 from .utils import CustomImageField
 
@@ -23,7 +30,7 @@ class BaseUserSerializer(DjoserUserSerializer):
     is_subscribed = serializers.SerializerMethodField()
 
     class Meta(DjoserUserSerializer.Meta):
-        model = CustomUser
+        model = User
         fields = (
             *DjoserUserSerializer.Meta.fields,
             'avatar',
@@ -62,7 +69,7 @@ class SubscriberReadSerializer(BaseUserSerializer):
     recipes_count = serializers.IntegerField(source='recipes.count')
 
     class Meta(BaseUserSerializer.Meta):
-        model = CustomUser
+        model = User
         fields = (
             *BaseUserSerializer.Meta.fields, 'recipes', 'recipes_count'
         )
