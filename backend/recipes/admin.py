@@ -45,7 +45,7 @@ class RelatedObjectFilter(admin.SimpleListFilter):
 class HasRecipesFilter(RelatedObjectFilter):
     title = ('Есть рецепты')
     parameter_name = 'has_recipes'
-    related_field_name = 'recipes'
+    related_field_name = 'authored_recipes'
 
 
 class HasSubscriptionsFilter(RelatedObjectFilter):

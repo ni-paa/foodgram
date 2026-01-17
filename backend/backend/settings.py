@@ -12,7 +12,10 @@ SECRET_KEY = os.environ.get('SECRET_KEY', get_random_secret_key())
 
 DEBUG = (os.environ.get('DEBUG') == 'True')
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', default='127.0.0.1, localhost').split(', ')
+if DEBUG:
+    ALLOWED_HOSTS = ['*']
+else:
+    ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', default='127.0.0.1, localhost').split(', ')
 
 CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1',
@@ -132,12 +135,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny',
     ],
 
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
-    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [],
 
     'DEFAULT_PAGINATION_CLASS': 'api.pagination.PageLimitPagination',
     'PAGE_SIZE': 6,

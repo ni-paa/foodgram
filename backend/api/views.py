@@ -163,7 +163,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     """Вьюсет для Рецептов."""
 
     queryset = Recipe.objects.all()
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend, ]
     filterset_class = RecipeFilter
     serializer_class = RecipeSerializer
