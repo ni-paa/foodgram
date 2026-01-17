@@ -4,7 +4,7 @@ from django.utils.safestring import mark_safe
 from django.contrib.auth.models import Group
 
 from .models import (Favorite, Ingredient, RecipeIngredients, Recipe,
-                     ShoppingCart, Tag, User, Subscription)
+                     ShoppingCart, Tag, CustomUser, Follow)
 
 # Убираем стандартные модели
 admin.site.unregister(Group)
@@ -44,7 +44,7 @@ class HasRecipesFilter(RelatedObjectFilter):
 class HasSubscriptionsFilter(RelatedObjectFilter):
     title = ('Есть подписки')
     parameter_name = 'has_subscriptions'
-    related_field_name = 'authors'
+    related_field_name = 'following'
 
 
 class HasFollowersFilter(RelatedObjectFilter):
@@ -53,7 +53,7 @@ class HasFollowersFilter(RelatedObjectFilter):
     related_field_name = 'followers'
 
 
-@admin.register(User)
+@admin.register(CustomUser)
 class UserAdmin(BaseUserAdmin):
     list_display = (
         'username', 'email', 'full_name', 'avatar_preview',
@@ -98,23 +98,23 @@ class UserAdmin(BaseUserAdmin):
 
     @admin.display(description=('Подписки'))
     def subscription_count(self, user):
-        return user.followers.count()
+        return user.following.count()
 
     @admin.display(description=('Подписчики'))
     def follower_count(self, user):
-        return user.authors.count()
+        return user.followers.count()
 
 
-@admin.register(Subscription)
-class SubscriptionAdmin(admin.ModelAdmin):
-    list_display = ('author', 'subscriber')
+@admin.register(Follow)
+class FollowAdmin(admin.ModelAdmin):
+    list_display = ('followed_user', 'follower')
     search_fields = (
-        'subscriber__username',
-        'author__username',
-        'subscriber__email',
-        'author__email'
+        'follower__username',
+        'followed_user__username',
+        'follower__email',
+        'followed_user__email'
     )
-    list_filter = ('author', 'subscriber')
+    list_filter = ('followed_user', 'follower')
 
 
 class RecipeIngredientInline(admin.TabularInline):

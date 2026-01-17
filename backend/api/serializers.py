@@ -11,19 +11,19 @@ from recipes.constants import (
 )
 from recipes.models import (
     Ingredient, RecipeIngredients,
-    Tag, Recipe, User
+    Tag, Recipe, CustomUser
 )
-from .utils import Base64ImageField
+from .utils import CustomImageField
 
 
 class BaseUserSerializer(DjoserUserSerializer):
     """Сериалайзер под текущего пользователя."""
 
-    avatar = Base64ImageField(required=False, allow_null=True)
+    avatar = CustomImageField(required=False, allow_null=True)
     is_subscribed = serializers.SerializerMethodField()
 
     class Meta(DjoserUserSerializer.Meta):
-        model = User
+        model = CustomUser
         fields = (
             *DjoserUserSerializer.Meta.fields,
             'avatar',
@@ -36,14 +36,14 @@ class BaseUserSerializer(DjoserUserSerializer):
         request = self.context.get('request')
         return (
             request and not request.user.is_anonymous
-            and request.user.followers.filter(author=obj).exists()
+            and request.user.followers.filter(followed_user=obj).exists()
         )
 
 
 class AvatarSerializer(serializers.Serializer):
     """Сериалайзер для аватара."""
 
-    avatar = Base64ImageField(required=False)
+    avatar = CustomImageField(required=False)
 
 
 class RecipeShortSerializer(serializers.ModelSerializer):
@@ -62,7 +62,7 @@ class SubscriberReadSerializer(BaseUserSerializer):
     recipes_count = serializers.IntegerField(source='recipes.count')
 
     class Meta(BaseUserSerializer.Meta):
-        model = User
+        model = CustomUser
         fields = (
             *BaseUserSerializer.Meta.fields, 'recipes', 'recipes_count'
         )
@@ -132,7 +132,7 @@ class RecipeIngredientsGetSerializer(serializers.ModelSerializer):
 class RecipeSerializer(serializers.ModelSerializer):
     """Сериализатор для создания рецептов."""
 
-    image = Base64ImageField()
+    image = CustomImageField()
     tags = serializers.PrimaryKeyRelatedField(
         many=True, queryset=Tag.objects.all()
     )

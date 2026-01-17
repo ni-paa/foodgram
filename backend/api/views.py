@@ -24,7 +24,7 @@ from recipes.constants import (
 from .filters import RecipeFilter, IngredientFilter
 from recipes.models import (
     Ingredient, Favorite, Recipe, RecipeIngredients,
-    ShoppingCart, Tag, Subscription, User
+    ShoppingCart, Tag, Follow, CustomUser
 
 )
 from .serializers import (
@@ -39,14 +39,14 @@ from .serializers import (
 from .permissions import (
     IsAuthor
 )
-from .utils import create_report_of_shopping_list
+from .utils import generate_shopping_list_report
 from .pagination import PageLimitPagination
 
 
 class UserViewSet(DjoserViewSets.UserViewSet):
     """Общий вьюсет для пользователя."""
 
-    queryset = User.objects.all()
+    queryset = CustomUser.objects.all()
     serializer_class = BaseUserSerializer
     pagination_class = PageLimitPagination
 
@@ -99,7 +99,7 @@ class UserViewSet(DjoserViewSets.UserViewSet):
     def subscriptions(self, request):
         """Метод для управления подписками пользователя."""
         user = request.user
-        queryset = User.objects.filter(authors__subscriber=user)
+        queryset = CustomUser.objects.filter(following__follower=user)
         pages = self.paginate_queryset(queryset)
         self.serializer_class = SubscriberReadSerializer
         serializer = self.get_serializer(
@@ -114,23 +114,23 @@ class UserViewSet(DjoserViewSets.UserViewSet):
     def subscribe(self, request, id):
         """Метод для управления подписками."""
         user = request.user
-        author = get_object_or_404(User, id=id)
+        followed_user = get_object_or_404(CustomUser, id=id)
         # Проверка подписки на самого себя
-        if user == author:
+        if user == followed_user:
             raise ValidationError({'error': SUBSCRIBE_SELF_ERROR})
         # Логика добавления подписки
         if request.method == 'POST':
-            subscription, created = Subscription.objects.get_or_create(
-                author=author, subscriber=user)
+            follow_obj, created = Follow.objects.get_or_create(
+                followed_user=followed_user, follower=user)
             if not created:
                 raise ValidationError({'error': SUBSCRIBE_ERROR})
             serializer = SubscriberReadSerializer(
-                author, context={'request': request})
+                followed_user, context={'request': request})
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         # Логика удаления подписки
         if request.method == 'DELETE':
             get_object_or_404(
-                Subscription, author=author, subscriber=user).delete()
+                Follow, followed_user=followed_user, follower=user).delete()
         return HttpResponse(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -233,7 +233,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             'ingredient__measurement_unit'
         ).annotate(amount=Sum('amount')).order_by('ingredient__name')
         recipes = Recipe.objects.filter(shoppingcarts__user=user)
-        shopping_list = create_report_of_shopping_list(
+        shopping_list = generate_shopping_list_report(
             user, ingredients, recipes)
         # Формирование имени файла
         filename = f'{user.username}_shopping_list.txt'

@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
 ]
 
-AUTH_USER_MODEL = 'recipes.User'
+AUTH_USER_MODEL = 'recipes.CustomUser'
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',

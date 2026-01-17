@@ -1,7 +1,7 @@
 from django_filters import rest_framework as filters
 from rest_framework.filters import BaseFilterBackend
 
-from recipes.models import Recipe, User
+from recipes.models import Recipe, CustomUser
 
 
 class IngredientFilter(BaseFilterBackend):
@@ -19,7 +19,7 @@ class IngredientFilter(BaseFilterBackend):
 class RecipeFilter(filters.FilterSet):
     """Фильтр для рецептов."""
 
-    author = filters.ModelChoiceFilter(queryset=User.objects.all())
+    author = filters.ModelChoiceFilter(queryset=CustomUser.objects.all())
     tags = filters.CharFilter(method='filter_tags')
     is_favorited = filters.BooleanFilter(
         method='filter_is_favorited'

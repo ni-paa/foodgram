@@ -1,42 +1,47 @@
+import re
+
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import (
-    MinValueValidator, RegexValidator)
+from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models
 from django.urls import reverse
 
 from .constants import (
+    EMAIL_MAX_LENGTH, FIO_MAX_FIELD_LENGTH,
     TAG_NAME_MAX_LENGTH, INGREDIENT_NAME_MAX_LENGTH,
     INGREDIENT_UNIT_MAX_LENGTH, RECIPE_NAME_MAX_LENGTH,
-    COOKING_TIME_MIN,
-    AMOUNT_MIN,
-    EMAIL_MAX_LENGTH, FIO_MAX_FIELD_LENGTH
+    COOKING_TIME_MIN, AMOUNT_MIN
 )
 
 
-class User(AbstractUser):
-    """Кастомный класс для модели User."""
+class CustomUser(AbstractUser):
+    """Расширенная модель пользователя с дополнительными полями."""
 
+    email = models.EmailField(
+        'Адрес электронной почты',
+        max_length=EMAIL_MAX_LENGTH,
+        unique=True
+    )
     username = models.CharField(
-        'Никнейм',
+        'Логин пользователя',
         max_length=FIO_MAX_FIELD_LENGTH,
         unique=True,
         validators=[RegexValidator(
             regex=r'^[\w.@+-]+$',
             message=(
                 'Логин может содержать только буквы, цифры и символы @/./+/-/_'
-            ))])
-    email = models.EmailField(max_length=EMAIL_MAX_LENGTH,
-                              unique=True,
-                              verbose_name='Электронная почта')
-    first_name = models.CharField('Имя', max_length=FIO_MAX_FIELD_LENGTH)
-    last_name = models.CharField('Фамилия', max_length=FIO_MAX_FIELD_LENGTH)
-
-    # Поле для аватара.
+            ))]
+    )
+    first_name = models.CharField(
+        'Имя', max_length=FIO_MAX_FIELD_LENGTH
+    )
+    last_name = models.CharField(
+        'Фамилия', max_length=FIO_MAX_FIELD_LENGTH
+    )
     avatar = models.ImageField(
         upload_to='users/images/',
         blank=True,
         null=True,
-        verbose_name='Аватар'
+        verbose_name='Изображение профиля'
     )
 
     USERNAME_FIELD = 'email'
@@ -45,21 +50,21 @@ class User(AbstractUser):
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
-        ordering = ('username',)
+        ordering = ['username']
 
     def __str__(self):
-        return self.username
+        return f'Пользователь: {self.username}'
 
 
-class Subscription(models.Model):
-    """Модель подписок."""
+class Follow(models.Model):
+    """Модель для подписок на авторов."""
 
-    author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='authors',
-        verbose_name='Автор'
+    followed_user = models.ForeignKey(
+        CustomUser, on_delete=models.CASCADE, related_name='following',
+        verbose_name='Подписываемый автор'
     )
-    subscriber = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='followers',
+    follower = models.ForeignKey(
+        CustomUser, on_delete=models.CASCADE, related_name='followers',
         verbose_name='Подписчик'
     )
 
@@ -68,7 +73,7 @@ class Subscription(models.Model):
         verbose_name_plural = 'Подписки'
         constraints = [
             models.UniqueConstraint(
-                fields=['author', 'subscriber'],
+                fields=['followed_user', 'follower'],
                 name='unique_follow'
             )
         ]
@@ -129,8 +134,8 @@ class Recipe(models.Model):
         Tag, verbose_name='Тэги'
     )
     author = models.ForeignKey(
-        User, verbose_name='Автор', on_delete=models.CASCADE,
-        related_name='recipes'
+        CustomUser, verbose_name='Автор', on_delete=models.CASCADE,
+        related_name='authored_recipes'
     )
     ingredients = models.ManyToManyField(
         Ingredient, through='RecipeIngredients',
@@ -202,7 +207,7 @@ class BaseUserRecipe(models.Model):
     """Базовый класс для хранения пользователя и рецепта."""
 
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, verbose_name='Пользователь'
+        CustomUser, on_delete=models.CASCADE, verbose_name='Пользователь'
     )
     recipe = models.ForeignKey(
         Recipe, on_delete=models.CASCADE, verbose_name='Рецепт'
