@@ -2,7 +2,8 @@
 Утилиты для API приложения рецептов.
 
 Этот модуль содержит вспомогательные функции и классы,
-такие как обработка изображений в формате Base64 и генерация отчета списка покупок.
+такие как обработка изображений в формате Base64 и генерация
+отчета списка покупок.
 """
 
 import base64
@@ -50,7 +51,8 @@ def generate_shopping_list_report(user, ingredients, recipes):
     """
     # Получаем текущую дату
     current_date = datetime.today()
-    formatted_date = f"{current_date.day} {MONTH_NAMES[current_date.month - 1]} {current_date.year}"
+    formatted_date = f"{current_date.day} {MONTH_NAMES[
+        current_date.month - 1]} {current_date.year}"
 
     # Создание заголовка с именем пользователя и датой
     header = SHOPPING_LIST_HEADER.format(

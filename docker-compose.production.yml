@@ -16,7 +16,7 @@ services:
     image: katomy/foodgram_backend
     env_file: .env
     volumes:
-      - static:/backend_static/
+      - static:/app/static/
       - media:/app/media/
       - redoc:/app/docs/
     command: >
