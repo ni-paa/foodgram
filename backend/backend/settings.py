@@ -16,7 +16,10 @@ ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', default='127.0.0.1, localhost').
 
 CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1',
+    'http://localhost',
     'http://localhost:8000',
+    'https://food.vsdb.ru',
+    'http://food.vsdb.ru',
 ]
 
 INSTALLED_APPS = [
