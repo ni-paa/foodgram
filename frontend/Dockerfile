@@ -4,6 +4,6 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . ./
-ENV PUBLIC_URL=/static/frontend_static/
+ENV PUBLIC_URL=/
 RUN npm run build
 CMD cp -r build result_build

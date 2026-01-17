@@ -25,14 +25,14 @@ services:
       && python manage.py migrate recipes
       && python manage.py load_ingridients data/ingredients.json
       && python manage.py load_tags data/tags.json
-      && gunicorn --bind 0.0.0.0:8000 backend.wsgi"
+      && gunicorn --bind 0.0.0.0:8080 backend.wsgi"
     depends_on:
       - db
 
   frontend:
     env_file: .env
     build: ./frontend/
-    command: cp -r /app/build/. /frontend_static/
+    command: sh -c "ls -la /app/build && cp -r /app/build/. /frontend_static/"
     volumes:
       - static:/frontend_static
 
@@ -40,8 +40,8 @@ services:
     build: ./infra/
     env_file: .env
     volumes:
-      - static:/staticfiles
-      - media:/mediafiles
+      - static:/static
+      - media:/media
     ports:
       - 80:80
     depends_on:

@@ -33,9 +33,9 @@ services:
   frontend:
     image: katomy/foodgram_frontend
     env_file: .env
-    command: cp -r /app/build/. /frontend_static/
+    command: sh -c "ls -la /app/build && cp -r /app/build/. /static/"
     volumes:
-      - static:/frontend_static/
+      - static:/static/
   gateway:
     image: katomy/foodgram_nginx
     env_file: .env
