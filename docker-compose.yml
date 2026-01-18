@@ -2,6 +2,7 @@ volumes:
   pg_data:
   static:
   media:
+  backend_static:
 
 services:
   db:
@@ -19,6 +20,7 @@ services:
     env_file: .env
     volumes:
       - static:/static
+      - backend_static:/backend_static  # Обновленный путь для статических файлов
       - media:/app/media
     command: >
       sh -c "python manage.py makemigrations
@@ -37,7 +39,7 @@ services:
     build:
       context: ./frontend/
     env_file: .env
-    command: sh -c "cp -r /app/build/static /static/ && cp /app/build/index.html /static/"
+    # Файлы копируются в Dockerfile
     volumes:
       - static:/static
 
@@ -48,6 +50,7 @@ services:
     env_file: .env
     volumes:
       - static:/static
+      - backend_static:/backend_static  # Добавляем доступ к статическим файлам бэкенда
       - media:/media
     ports:
       - 80:80

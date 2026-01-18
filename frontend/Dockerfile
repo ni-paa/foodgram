@@ -6,4 +6,7 @@ RUN npm install
 COPY . ./
 ENV PUBLIC_URL=/
 RUN npm run build
-CMD cp -r build result_build
+# Копируем файлы сборки в директорию, доступную через volume
+RUN mkdir -p /static
+RUN cp -r build/* /static/
+CMD ["tail", "-f", "/dev/null"]
