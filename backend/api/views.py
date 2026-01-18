@@ -17,7 +17,6 @@ from rest_framework.response import Response
 from rest_framework import status, viewsets
 from rest_framework.permissions import (
     AllowAny,
-    IsAuthenticatedOrReadOnly,
     IsAuthenticated,
 )
 
@@ -177,7 +176,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         """Метод для прав доступа, в зависимости от метода."""
-        if self.action in ('shopping_cart', 'favorite', 'download_shopping_cart') or self.request.method == "POST":
+        if (self.action in (
+                'shopping_cart', 'favorite', 'download_shopping_cart'
+        ) or self.request.method == "POST"):
+
             self.permission_classes = [IsAuthenticated]
         elif self.request.method in ("PATCH", "DELETE"):
             self.permission_classes = [IsAuthor]

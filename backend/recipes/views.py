@@ -10,4 +10,4 @@ def recipe_redirect(request, pk):
 
 
 def index_view(request):
-    return HttpResponse("<h1>Foodgram Backend</h1><p>Backend работает успешно! 🎉</p><p>Для работы с фронтендом, запустите React приложение из директории <code>frontend/</code>.</p><p>Документация API: <a href='/docs/'>/docs/</a></p><p>Админ панель: <a href='/admin/'>/admin/</a></p>")
+    return HttpResponse("Backend работает успешно!")
