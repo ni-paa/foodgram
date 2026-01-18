@@ -20,14 +20,14 @@ services:
     env_file: .env
     volumes:
       - static:/static
-      - backend_static:/backend_static  # Обновленный путь для статических файлов
+      - backend_static:/backend_static  # Отдельный volume для статики бэкенда
       - media:/app/media
     command: >
       sh -c "python manage.py makemigrations
       && python manage.py makemigrations recipes
       && python manage.py migrate
       && python manage.py migrate recipes
-      && python manage.py collectstatic --noinput
+      && python manage.py collectstatic --noinput --settings=backend.settings
       && python manage.py load_ingridients data/ingredients.json
       && python manage.py load_tags data/tags.json
       && gunicorn --bind 0.0.0.0:8080 backend.wsgi"
@@ -50,7 +50,7 @@ services:
     env_file: .env
     volumes:
       - static:/static
-      - backend_static:/backend_static  # Добавляем доступ к статическим файлам бэкенда
+      - backend_static:/backend_static  # Доступ к статике бэкенда
       - media:/media
     ports:
       - 80:80
