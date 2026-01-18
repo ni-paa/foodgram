@@ -101,7 +101,7 @@ class UserAdmin(BaseUserAdmin):
 
     @admin.display(description=('Рецепты'))
     def recipe_count(self, user):
-        return user.recipes.count()
+        return user.authored_recipes.count()
 
     @admin.display(description=('Подписки'))
     def subscription_count(self, user):
