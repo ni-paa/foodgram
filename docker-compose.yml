@@ -13,7 +13,9 @@ services:
       - "5432:5432"
 
   backend:
-    build: ./backend/
+    image: backend
+    build:
+      context: ./backend/
     env_file: .env
     volumes:
       - static:/static
@@ -31,14 +33,18 @@ services:
       - db
 
   frontend:
+    image: frontend
+    build:
+      context: ./frontend/
     env_file: .env
-    build: ./frontend/
     command: sh -c "cp -r /app/build/static /static/ && cp /app/build/index.html /static/"
     volumes:
       - static:/static
 
   nginx:
-    build: ./infra/
+    image: nginx
+    build:
+      context: ./nginx/
     env_file: .env
     volumes:
       - static:/static
@@ -47,3 +53,4 @@ services:
       - 80:80
     depends_on:
       - backend
+      - frontend

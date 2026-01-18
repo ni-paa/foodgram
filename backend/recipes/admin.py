@@ -63,7 +63,7 @@ class HasFollowersFilter(RelatedObjectFilter):
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
     list_display = (
-        'username', 'email', 'full_name', 'avatar_preview',
+        'email', 'username', 'full_name', 'avatar_preview',
         'recipe_count', 'subscription_count', 'follower_count'
     )
     list_filter = (
@@ -71,11 +71,11 @@ class UserAdmin(BaseUserAdmin):
         HasSubscriptionsFilter,
         HasFollowersFilter,
     )
-    search_fields = ('username', 'email')
+    search_fields = ('email', 'username')
     fieldsets = (
-        (None, {'fields': ('username', 'password')}),
+        (None, {'fields': ('email', 'username', 'password')}),
         (('Персональная информация'), {'fields': (
-            'first_name', 'last_name', 'email', 'avatar'
+            'first_name', 'last_name', 'avatar'
         )}),
         (('Права'), {'fields': ('is_active', 'is_staff', 'is_superuser')}),
         (('Важные даты'), {'fields': ('last_login', 'date_joined')}),
@@ -83,7 +83,7 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('username', 'password1', 'password2', 'email',
+            'fields': ('email', 'username', 'password1', 'password2',
                        'first_name', 'last_name', 'is_staff', 'is_active'),
         }),
     )
@@ -114,7 +114,7 @@ class UserAdmin(BaseUserAdmin):
 
 @admin.register(Follow)
 class FollowAdmin(admin.ModelAdmin):
-    list_display = ('followed_user', 'follower')
+    list_display = ('followed_user_display', 'follower_display')
     search_fields = (
         'follower__username',
         'followed_user__username',
@@ -122,6 +122,14 @@ class FollowAdmin(admin.ModelAdmin):
         'followed_user__email'
     )
     list_filter = ('followed_user', 'follower')
+
+    @admin.display(description='Подписываемый автор')
+    def followed_user_display(self, obj):
+        return f"{obj.followed_user.username} ({obj.followed_user.email})"
+
+    @admin.display(description='Подписчик')
+    def follower_display(self, obj):
+        return f"{obj.follower.username} ({obj.follower.email})"
 
 
 class RecipeIngredientInline(admin.TabularInline):
