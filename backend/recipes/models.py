@@ -1,5 +1,7 @@
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import MinValueValidator, RegexValidator
+from django.core.validators import (
+    MinValueValidator, MaxValueValidator, RegexValidator
+)
 from django.db import models
 from django.urls import reverse
 
@@ -7,7 +9,7 @@ from .constants import (
     EMAIL_MAX_LENGTH, FIO_MAX_FIELD_LENGTH,
     TAG_NAME_MAX_LENGTH, INGREDIENT_NAME_MAX_LENGTH,
     INGREDIENT_UNIT_MAX_LENGTH, RECIPE_NAME_MAX_LENGTH,
-    COOKING_TIME_MIN, AMOUNT_MIN
+    COOKING_TIME_MIN, COOKING_TIME_MAX, AMOUNT_MIN, AMOUNT_MAX
 )
 
 
@@ -46,9 +48,9 @@ class User(AbstractUser):
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
 
     class Meta:
+        ordering = ['username']
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
-        ordering = ['username']
 
     def __str__(self):
         return f'Пользователь: {self.username}'
@@ -67,6 +69,7 @@ class Follow(models.Model):
     )
 
     class Meta:
+        ordering = ['followed_user']
         verbose_name = 'Подписка'
         verbose_name_plural = 'Подписки'
         constraints = [
@@ -93,9 +96,9 @@ class Tag(models.Model):
     )
 
     class Meta:
+        ordering = ['name']
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
-        ordering = ('name',)
 
     def __str__(self):
         return self.name
@@ -114,9 +117,9 @@ class Ingredient(models.Model):
     )
 
     class Meta:
+        ordering = ['name']
         verbose_name = 'Продукт'
         verbose_name_plural = 'Продукты'
-        ordering = ('name',)
         constraints = [
             models.UniqueConstraint(
                 fields=['name', 'measurement_unit'],
@@ -152,12 +155,11 @@ class Recipe(models.Model):
     text = models.TextField(
         verbose_name='Описание'
     )
-    cooking_time = models.PositiveIntegerField(
+    cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время приготовления (в минутах)',
         validators=[
-            MinValueValidator(
-                COOKING_TIME_MIN,
-            )
+            MinValueValidator(COOKING_TIME_MIN),
+            MaxValueValidator(COOKING_TIME_MAX)
         ]
     )
     created_at = models.DateTimeField(
@@ -171,10 +173,10 @@ class Recipe(models.Model):
         return reverse('recipe-detail', args=[self.id])
 
     class Meta:
+        ordering = ['-created_at']
         default_related_name = 'recipes'
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
-        ordering = ('-created_at',)
 
     def __str__(self):
         return self.name
@@ -189,16 +191,16 @@ class RecipeIngredients(models.Model):
     ingredient = models.ForeignKey(
         Ingredient, verbose_name='Продукт', on_delete=models.CASCADE
     )
-    amount = models.IntegerField(
+    amount = models.PositiveSmallIntegerField(
         verbose_name='Мера',
         validators=[
-            MinValueValidator(
-                AMOUNT_MIN,
-            )
+            MinValueValidator(AMOUNT_MIN),
+            MaxValueValidator(AMOUNT_MAX)
         ]
     )
 
     class Meta:
+        ordering = ['recipe']
         default_related_name = 'recipe_ingredients'
         verbose_name = 'Продукт рецепта'
         verbose_name_plural = 'Продукты рецептов'
@@ -215,6 +217,7 @@ class BaseUserRecipe(models.Model):
     )
 
     class Meta:
+        ordering = ['user']
         abstract = True
         # Уникальность пары (пользователь + рецепт)
         constraints = [
@@ -234,7 +237,6 @@ class ShoppingCart(BaseUserRecipe):
     """Модель для списка покупок."""
 
     class Meta(BaseUserRecipe.Meta):
-
         verbose_name = 'Список покупок'
         verbose_name_plural = 'Списки покупок'
 
@@ -243,6 +245,5 @@ class Favorite(BaseUserRecipe):
     """Модель для Избранных рецептов."""
 
     class Meta(BaseUserRecipe.Meta):
-
         verbose_name = 'Избранное'
         verbose_name_plural = 'Избранное'

@@ -8,17 +8,18 @@ Tag, Follow, ShoppingCart, Favorite и вспомогательные сериа
 from collections import Counter
 
 from django.db import transaction
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 from djoser.serializers import UserSerializer as DjoserUserSerializer
 from rest_framework import serializers
 
 from recipes.constants import (
     AMOUNT_OF_INGREDIENT_CREATE_ERROR, AMOUNT_OF_TAG_CREATE_ERROR,
-    AMOUNT_MIN, RECIPES_LIMIT
+    AMOUNT_MIN, AMOUNT_MAX, COOKING_TIME_MIN, COOKING_TIME_MAX,
+    RECIPES_LIMIT, SUBSCRIBE_SELF_ERROR, SUBSCRIBE_ERROR
 )
 from recipes.models import (
     Ingredient, RecipeIngredients,
-    Tag, Recipe, User
+    Tag, Recipe, Follow, User
 )
 from .utils import CustomImageField
 
@@ -47,6 +48,23 @@ class BaseUserSerializer(DjoserUserSerializer):
         )
 
 
+class SubscribeSerializer(serializers.Serializer):
+    """Сериализатор для подписки на самого себя."""
+    id = serializers.IntegerField()
+
+    def validate_id(self, value):
+        request = self.context.get('request')
+        user = request.user
+        # Проверка, что пользователь не пытается подписаться на самого себя
+        if user.id == value:
+            raise serializers.ValidationError(SUBSCRIBE_SELF_ERROR)
+        # Проверка на дублирование
+        if Follow.objects.filter(follower=user,
+                                 followed_user_id=value).exists():
+            raise serializers.ValidationError(SUBSCRIBE_ERROR)
+        return value
+
+
 class AvatarSerializer(serializers.Serializer):
     """Сериалайзер для аватара."""
 
@@ -66,7 +84,7 @@ class SubscriberReadSerializer(BaseUserSerializer):
     """Сериалайзер для подписчиков."""
 
     recipes = serializers.SerializerMethodField(method_name='get_recipes')
-    recipes_count = serializers.IntegerField(source='recipes.count')
+    recipes_count = serializers.IntegerField(source='authored_recipes.count')
 
     class Meta(BaseUserSerializer.Meta):
         model = User
@@ -75,14 +93,14 @@ class SubscriberReadSerializer(BaseUserSerializer):
         )
         read_only_fields = fields
 
-    def get_recipes(self, recipe):
+    def get_recipes(self, obj):
         """
         Метод для получения списка рецептов.
         :param obj: объект указанного пользователя.
         :return: сериализованный список рецептов.
         """
         return RecipeShortSerializer(
-            recipe.recipes.all()[:int(self.context['request'].GET.get(
+            obj.authored_recipes.all()[:int(self.context['request'].GET.get(
                 'recipes_limit', RECIPES_LIMIT))],
             many=True
         ).data
@@ -112,7 +130,8 @@ class RecipeIngredientsSetSerializer(serializers.ModelSerializer):
     )
     amount = serializers.IntegerField(
         validators=[
-            MinValueValidator(AMOUNT_MIN)
+            MinValueValidator(AMOUNT_MIN),
+            MaxValueValidator(AMOUNT_MAX)
         ]
     )
 
@@ -150,6 +169,12 @@ class RecipeSerializer(serializers.ModelSerializer):
     )
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
+    cooking_time = serializers.IntegerField(
+        validators=[
+            MinValueValidator(COOKING_TIME_MIN),
+            MaxValueValidator(COOKING_TIME_MAX)
+        ]
+    )
 
     class Meta:
         model = Recipe
@@ -167,7 +192,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         # Возвращаем или генерируем ошибку, если есть дубли
         if duplicates:
             raise serializers.ValidationError(
-                f"Дублирующиеся {item_name}: {duplicates}"
+                f'Дублирующиеся {item_name}: {duplicates}'
             )
 
     def validate(self, attrs):
@@ -184,7 +209,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             )
         self.find_duplicates(
             [ingredient.get('id') for ingredient in ingredients], "Ingredient")
-        self.find_duplicates(tags, "Tag")
+        self.find_duplicates(tags, 'Tag')
         return attrs
 
     def create_ingredients(self, recipe, ingredients):

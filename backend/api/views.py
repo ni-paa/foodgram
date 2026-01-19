@@ -23,9 +23,7 @@ from rest_framework.permissions import (
 from recipes.constants import (
     DUPLICATE_OF_RECIPE_ADD_CART,
     UNEXIST_SHOPPING_CART_ERROR,
-    AVATAR_ERROR, SUBSCRIBE_ERROR,
-    SUBSCRIBE_SELF_ERROR
-
+    AVATAR_ERROR
 )
 from .filters import RecipeFilter, IngredientFilter
 from recipes.models import (
@@ -40,7 +38,8 @@ from .serializers import (
     TagSerializer,
     SubscriberReadSerializer,
     AvatarSerializer,
-    BaseUserSerializer
+    BaseUserSerializer,
+    SubscribeSerializer
 )
 from .permissions import (
     IsAuthor
@@ -57,7 +56,7 @@ class UserViewSet(DjoserViewSets.UserViewSet):
     pagination_class = PageLimitPagination
 
     @action(
-        ["get", "put", "patch", "delete"],
+        ['get', 'put', 'patch', 'delete'],
         detail=False,
     )
     def get_permissions(self):
@@ -120,19 +119,23 @@ class UserViewSet(DjoserViewSets.UserViewSet):
     def subscribe(self, request, id):
         """Метод для управления подписками."""
         user = request.user
+
+        # Валидация через сериализатор
+        if request.method == 'POST':
+            serializer = SubscribeSerializer(
+                data={'id': id},
+                context={'request': request}
+            )
+            serializer.is_valid(raise_exception=True)
         followed_user = get_object_or_404(User, id=id)
-        # Проверка подписки на самого себя
-        if user == followed_user:
-            raise ValidationError({'error': SUBSCRIBE_SELF_ERROR})
+
         # Логика добавления подписки
         if request.method == 'POST':
-            follow_obj, created = Follow.objects.get_or_create(
-                followed_user=followed_user, follower=user)
-            if not created:
-                raise ValidationError({'error': SUBSCRIBE_ERROR})
+            Follow.objects.create(followed_user=followed_user, follower=user)
             serializer = SubscriberReadSerializer(
                 followed_user, context={'request': request})
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
         # Логика удаления подписки
         if request.method == 'DELETE':
             get_object_or_404(
