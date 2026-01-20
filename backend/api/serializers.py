@@ -19,7 +19,7 @@ from recipes.constants import (
 )
 from recipes.models import (
     Ingredient, RecipeIngredients,
-    Tag, Recipe, Follow, User
+    Tag, Recipe, User
 )
 from .utils import CustomImageField
 
