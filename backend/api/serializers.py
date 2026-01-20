@@ -53,14 +53,13 @@ class SubscribeSerializer(serializers.Serializer):
     id = serializers.IntegerField()
 
     def validate_id(self, value):
-        request = self.context.get('request')
+        request = self.context['request']
         user = request.user
         # Проверка, что пользователь не пытается подписаться на самого себя
         if user.id == value:
             raise serializers.ValidationError(SUBSCRIBE_SELF_ERROR)
         # Проверка на дублирование
-        if Follow.objects.filter(follower=user,
-                                 followed_user_id=value).exists():
+        if user.followers.filter(followed_user_id=value).exists():
             raise serializers.ValidationError(SUBSCRIBE_ERROR)
         return value
 
@@ -248,12 +247,12 @@ class RecipeSerializer(serializers.ModelSerializer):
         return recipe
 
     def get_is_favorited(self, favorites):
-        request = self.context.get('request')
+        request = self.context('request')
         return request.user.is_authenticated and favorites.favorites.filter(
             user=request.user).exists()
 
     def get_is_in_shopping_cart(self, obj):
-        request = self.context.get('request')
+        request = self.context('request')
         if request.user.is_authenticated:
             return obj.shoppingcarts.filter(user=request.user).exists()
         return False
